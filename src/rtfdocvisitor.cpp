@@ -1150,6 +1150,16 @@ void RTFDocVisitor::visitPost(DocHRef *)
   m_lastIsPara=FALSE;
 }
 
+void RTFDocVisitor::visitPre(DocAbbr *)
+{
+  if (m_hide) return;
+}
+
+void RTFDocVisitor::visitPost(DocAbbr *)
+{
+  if (m_hide) return;
+}
+
 void RTFDocVisitor::visitPre(DocHtmlHeader *header)
 {
   if (m_hide) return;

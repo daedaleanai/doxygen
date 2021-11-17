@@ -144,7 +144,8 @@ class DocNode
                 Kind_ParBlock       = 51,
                 Kind_DiaFile        = 52,
                 Kind_Emoji          = 53,
-                Kind_Sep            = 54
+                Kind_Sep            = 54,
+                Kind_HtmlAbbr       = 55,
               };
     /*! Creates a new node */
     DocNode() : m_parent(0), m_insidePre(FALSE) {}
@@ -977,6 +978,25 @@ class DocHRef : public CompAccept<DocHRef>
     HtmlAttribList m_attribs;
     QCString   m_url;
     QCString   m_relPath;
+};
+
+/** Node representing aabbreviation */
+class DocAbbr : public CompAccept<DocAbbr>
+{
+public:
+  DocAbbr(DocNode *parent,const HtmlAttribList &attribs,const QCString &title,
+          const QCString &relPath) :
+                                     m_attribs(attribs), m_title(title), m_relPath(relPath) { m_parent = parent; }
+  int parse();
+  QCString title() const        { return m_title; }
+  QCString relPath() const    { return m_relPath; }
+  Kind kind() const                     { return Kind_HtmlAbbr; }
+  const HtmlAttribList &attribs() const { return m_attribs; }
+
+private:
+  HtmlAttribList m_attribs;
+  QCString   m_title;
+  QCString   m_relPath;
 };
 
 /** Node Html heading */

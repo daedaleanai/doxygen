@@ -360,6 +360,8 @@ public:
   void visitPost(DocInternal *);
   void visitPre(DocHRef *);
   void visitPost(DocHRef *);
+  void visitPre(DocAbbr*);
+  void visitPost(DocAbbr *);
   void visitPre(DocHtmlHeader *);
   void visitPost(DocHtmlHeader *);
   void visitPre(DocImage *);
@@ -1095,6 +1097,20 @@ void PerlModDocVisitor::visitPre(DocHRef *)
 }
 
 void PerlModDocVisitor::visitPost(DocHRef *)
+{
+#if 0
+  m_output.add("</ulink>");
+#endif
+}
+
+void PerlModDocVisitor::visitPre(DocAbbr *)
+{
+#if 0
+  m_output.add("<ulink url=\""); m_output.add(href->url()); m_output.add("\">");
+#endif
+}
+
+void PerlModDocVisitor::visitPost(DocAbbr *)
 {
 #if 0
   m_output.add("</ulink>");

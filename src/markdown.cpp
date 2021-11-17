@@ -1462,6 +1462,9 @@ static QCString extractTitleId(QCString &title, int level)
     //printf("found id='%s' title='%s'\n",id.data(),title.data());
     return id;
   }
+  if (title.find(' ') == -1) { // Use title as id if it is single word
+    return title;
+  }
   if ((level > 0) && (level <= Config_getInt(TOC_INCLUDE_HEADINGS)))
   {
     static AtomicInt autoId { 0 };

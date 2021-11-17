@@ -197,5 +197,7 @@ add_subdirectory(addon)
 enable_testing()
 add_subdirectory(testing)
 
+install(FILES BUILD.go DESTINATION ".")
+
 include(cmake/packaging.cmake) # set CPACK_xxxx properties
 include(CPack)

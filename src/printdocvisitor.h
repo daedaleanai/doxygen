@@ -506,6 +506,16 @@ class PrintDocVisitor : public DocVisitor
       indent_post();
       printf("</a>\n");
     }
+    void visitPre(DocAbbr *abbr)
+    {
+      indent_pre();
+      printf("<abbr title=\"%s\">\n",abbr->title().data());
+    }
+    void visitPost(DocAbbr *)
+    {
+      indent_post();
+      printf("</abbr>\n");
+    }
     void visitPre(DocHtmlHeader *header)
     {
       indent_pre();

@@ -61,6 +61,7 @@ class DocAnchor;
 class DocIndexEntry;
 class DocInternal;
 class DocHRef;
+class DocAbbr;
 class DocInclude;
 class DocIncOperator;
 class DocHtmlHeader;
@@ -162,6 +163,8 @@ class DocVisitor
     virtual void visitPost(DocInternal *) = 0;
     virtual void visitPre(DocHRef *) = 0;
     virtual void visitPost(DocHRef *) = 0;
+    virtual void visitPre(DocAbbr*) = 0;
+    virtual void visitPost(DocAbbr *) = 0;
     virtual void visitPre(DocHtmlHeader *) = 0;
     virtual void visitPost(DocHtmlHeader *) = 0;
     virtual void visitPre(DocImage *) = 0;

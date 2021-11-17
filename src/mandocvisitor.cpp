@@ -800,6 +800,18 @@ void ManDocVisitor::visitPost(DocHRef *)
   m_t << "\\fP";
 }
 
+void ManDocVisitor::visitPre(DocAbbr * abbr)
+{
+  if (m_hide) return;
+  m_t << abbr->title() << " (";
+}
+
+void ManDocVisitor::visitPost(DocAbbr *)
+{
+  if (m_hide) return;
+  m_t << ")";
+}
+
 void ManDocVisitor::visitPre(DocHtmlHeader *header)
 {
   if (m_hide) return;

@@ -1673,6 +1673,19 @@ void HtmlDocVisitor::visitPost(DocHRef *)
   m_t << "</a>";
 }
 
+void HtmlDocVisitor::visitPre(DocAbbr *abbr)
+{
+  if (m_hide) return;
+  m_t << "<abbr title=\"" << convertToHtml(abbr->title())  << "\""
+      << htmlAttribsToString(abbr->attribs()) << ">";
+}
+
+void HtmlDocVisitor::visitPost(DocAbbr *)
+{
+  if (m_hide) return;
+  m_t << "</abbr>";
+}
+
 void HtmlDocVisitor::visitPre(DocHtmlHeader *header)
 {
   if (m_hide) return;

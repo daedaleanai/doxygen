@@ -1578,7 +1578,7 @@ reparsetoken:
               handleStyleLeave(parent,children,DocStyleChange::Strike,tokenName);
             }
             break;
-          case HTML_DEL:
+         case HTML_DEL:
             if (!g_token->endTag)
             {
               handleStyleEnter(parent,children,DocStyleChange::Del,tokenName,&g_token->attribs);
@@ -1760,6 +1760,19 @@ static void handleImg(DocNode *parent,QList<DocNode> &children,const HtmlAttribL
   {
     warn_doc_error(g_fileName,getDoctokinizerLineNr(),"IMG tag does not have a SRC attribute!\n");
   }
+}
+
+//---------------------------------------------------------------------------
+
+static void handleAbbr(DocNode *parent,QList<DocNode> &children,const HtmlAttribList &tagHtmlAttribs)
+{
+  HtmlAttribListIterator li(tagHtmlAttribs);
+  QCString title = tagHtmlAttribs.find("title");
+
+  HtmlAttribList attrList = tagHtmlAttribs;
+  DocAbbr *abbr = new DocAbbr(parent,attrList,title,g_relPath);
+  children.append(abbr);
+  abbr->parse();
 }
 
 //---------------------------------------------------------------------------
@@ -3069,6 +3082,54 @@ endhref:
 
 //---------------------------------------------------------------------------
 
+int DocAbbr::parse()
+{
+  int retval=RetVal_OK;
+  g_nodeStack.push(this);
+  DBG(("DocAbbr::parse() start\n"));
+
+  int tok;
+  while ((tok=doctokenizerYYlex()))
+  {
+    if (!defaultHandleToken(this,tok,m_children))
+    {
+      switch (tok)
+      {
+      case TK_HTMLTAG:
+      {
+        int tagId=Mappers::htmlTagMapper->map(g_token->name);
+        if (tagId==HTML_ABBR && g_token->endTag) // found </abbr> tag
+        {
+          goto endabbr;
+        }
+        else
+        {
+          warn_doc_error(g_fileName,getDoctokinizerLineNr(),"Unexpected html tag <%s%s> found within <abbr title=...> context",
+                         g_token->endTag?"/":"",qPrint(g_token->name));
+        }
+      }
+      break;
+      default:
+        errorHandleDefaultToken(this,tok,m_children,"<abbr>..</abbr> block");
+        break;
+      }
+    }
+  }
+  if (tok==0)
+  {
+    warn_doc_error(g_fileName,getDoctokinizerLineNr(),"Unexpected end of comment while inside"
+                                                        " <abbr title=...> tag");
+  }
+endabbr:
+  handlePendingStyleCommands(this,m_children);
+  DBG(("DocAbbr::parse() end\n"));
+  DocNode *n=g_nodeStack.pop();
+  ASSERT(n==this);
+  return retval;
+}
+
+//---------------------------------------------------------------------------
+
 int DocInternal::parse(int level)
 {
   int retval=RetVal_OK;
@@ -3114,6 +3175,7 @@ int DocInternal::parse(int level)
   {
     DocSection *s=new DocSection(this,
         QMIN(level+Doxygen::subpageNestingLevel,5),g_token->sectionId);
+
     m_children.append(s);
     retval = s->parse();
   }
@@ -6074,6 +6136,11 @@ int DocPara::handleHtmlStartTag(const QCString &tagName,const HtmlAttribList &ta
         handleImg(this,m_children,tagHtmlAttribs);
       }
       break;
+    case HTML_ABBR:
+    {
+      handleAbbr(this,m_children,tagHtmlAttribs);
+    }
+    break;
     case HTML_BLOCKQUOTE:
       if (!g_token->emptyTag)
       {

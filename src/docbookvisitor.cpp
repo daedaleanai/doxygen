@@ -1176,6 +1176,20 @@ DB_VIS_C
   m_t << "</link>";
 }
 
+void DocbookDocVisitor::visitPre(DocAbbr *abbr)
+{
+  DB_VIS_C
+  if (m_hide) return;
+  m_t << "<abbr title=\"" << abbr->title() << "\">";
+}
+
+void DocbookDocVisitor::visitPost(DocAbbr *)
+{
+  DB_VIS_C
+  if (m_hide) return;
+  m_t << "</abbr>";
+}
+
 void DocbookDocVisitor::visitPre(DocHtmlHeader *)
 {
 DB_VIS_C

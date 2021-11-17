@@ -1347,6 +1347,24 @@ void LatexDocVisitor::visitPost(DocHRef *)
   m_t << "}}";
 }
 
+void LatexDocVisitor::visitPre(DocAbbr *abbr)
+{
+  if (m_hide) return;
+  if (Config_getBool(PDF_HYPERLINKS))
+  {
+    m_t << "\\ac{";
+    m_t << abbr->title();
+    m_t << "} (";
+  }
+  m_t << "{\\texttt{ ";
+}
+
+void LatexDocVisitor::visitPost(DocAbbr *)
+{
+  if (m_hide) return;
+  m_t << "}})";
+}
+
 void LatexDocVisitor::visitPre(DocHtmlHeader *header)
 {
   if (m_hide) return;

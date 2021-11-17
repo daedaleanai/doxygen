@@ -201,6 +201,7 @@ CommandMap htmlTagMap[] =
   { "blockquote", HTML_BLOCKQUOTE },
   { "strike",     HTML_STRIKE },
   { "s",          HTML_S },
+  { "abbr",       HTML_ABBR },
   { "u",          HTML_UNDERLINE },
   { "ins",        HTML_INS },
   { "del",        HTML_DEL },

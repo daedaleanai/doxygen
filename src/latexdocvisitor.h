@@ -102,6 +102,8 @@ class LatexDocVisitor : public DocVisitor
     void visitPost(DocInternal *);
     void visitPre(DocHRef *);
     void visitPost(DocHRef *);
+    void visitPre(DocAbbr *);
+    void visitPost(DocAbbr *);
     void visitPre(DocHtmlHeader *);
     void visitPost(DocHtmlHeader *) ;
     void visitPre(DocImage *);

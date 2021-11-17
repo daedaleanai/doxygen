@@ -904,6 +904,18 @@ void XmlDocVisitor::visitPost(DocHRef *)
   m_t << "</ulink>";
 }
 
+void XmlDocVisitor::visitPre(DocAbbr *abbr)
+{
+  if (m_hide) return;
+  m_t << "<abbr title=\"" << convertToXML(abbr->title(), TRUE) << "\">";
+}
+
+void XmlDocVisitor::visitPost(DocAbbr *)
+{
+  if (m_hide) return;
+  m_t << "</abbr>";
+}
+
 void XmlDocVisitor::visitPre(DocHtmlHeader *header)
 {
   if (m_hide) return;
