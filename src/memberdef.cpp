@@ -3922,11 +3922,6 @@ void MemberDefImpl::warnIfUndocumented() const
   }
   else
   {
-    if (!m_impl->hasLinkedReq)
-    {
-      warn_undoc(getDefFileName(),getDefLine(),"Member %s%s (%s) of %s %s has no linked LLR.",
-                 qPrint(name()),qPrint(argsString()),qPrint(memberTypeName()),qPrint(t),qPrint(d->name()));
-    }
     if (!isDetailedSectionLinkable())
     {
       warnIfUndocumentedParams();
@@ -4071,6 +4066,11 @@ void MemberDefImpl::warnIfUndocumentedParams() const
       warn_doc_error(getDefFileName(),getDefLine(),
           "return type of member %s is not documented",
           qPrint(qualifiedName()));
+    }
+    if (!m_impl->hasLinkedReq)
+    {
+      warn_undoc(getDefFileName(),getDefLine(),"Member %s has no linked LLR.",
+                 qPrint(qualifiedName()));
     }
   }
 }
