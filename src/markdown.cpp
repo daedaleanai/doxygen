@@ -1462,7 +1462,7 @@ static QCString extractTitleId(QCString &title, int level)
     //printf("found id='%s' title='%s'\n",id.data(),title.data());
     return id;
   }
-  if (title.find(' ') == -1) { // Use title as id if it is single word
+  if (title.find("REQ-") == 0) { // Use title as id if it starts with REQ-
     return title;
   }
   if ((level > 0) && (level <= Config_getInt(TOC_INCLUDE_HEADINGS)))
