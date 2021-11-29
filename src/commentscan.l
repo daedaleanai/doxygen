@@ -289,6 +289,7 @@ static const std::map< std::string, DocCmdMap > docCmdMap =
   { "throws",          { 0,                       CommandSpacing::Block     }},
   { "todo",            { &handleTodo,             CommandSpacing::XRef      }},
   { "tparam",          { 0,                       CommandSpacing::Block     }},
+  { "llr",             { 0,                       CommandSpacing::Block     }},
   { "typedef",         { &handleFn,               CommandSpacing::Invisible }},
   { "union",           { &handleUnion,            CommandSpacing::Invisible }},
   { "until",           { 0,                       CommandSpacing::Block     }},

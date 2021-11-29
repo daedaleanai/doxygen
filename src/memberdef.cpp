@@ -318,7 +318,7 @@ class MemberDefImpl : public DefinitionMixin<MemberDefMutable>
     virtual void writeTagFile(FTextStream &) const;
     virtual void warnIfUndocumented() const;
     virtual void warnIfUndocumentedParams() const;
-    virtual void detectUndocumentedParams(bool hasParamCommand,bool hasReturnCommand) const;
+    virtual void detectUndocumentedParams(bool hasParamCommand,bool hasReturnCommand,bool hasReqCommand) const;
     virtual MemberDefMutable *createTemplateInstanceMember(const ArgumentList &formalArgs,
                const std::unique_ptr<ArgumentList> &actualArgs) const;
     virtual void findSectionsInDocumentation();
@@ -738,7 +738,7 @@ class MemberDefAliasImpl : public DefinitionAliasMixin<MemberDef>
 
     virtual void warnIfUndocumented() const {}
     virtual void warnIfUndocumentedParams() const {}
-    virtual void detectUndocumentedParams(bool hasParamCommand,bool hasReturnCommand) const {}
+    virtual void detectUndocumentedParams(bool hasParamCommand,bool hasReturnCommand, bool hasReqCommand) const {}
     virtual void setMemberGroup(MemberGroup *grp) { m_memberGroup = grp; }
     virtual MemberDefMutable *createTemplateInstanceMember(const ArgumentList &formalArgs,
                const std::unique_ptr<ArgumentList> &actualArgs) const
@@ -1272,6 +1272,7 @@ class MemberDefImpl::IMPL
                            // in the interface
     mutable bool hasDocumentedParams = false;
     mutable bool hasDocumentedReturnType = false;
+    mutable bool hasLinkedReq = false;
     bool isDMember = false;
     Relationship related = Member;    // relationship of this to the class
     bool stat = false;                // is it a static function?
@@ -3919,9 +3920,17 @@ void MemberDefImpl::warnIfUndocumented() const
     warn_undoc(getDefFileName(),getDefLine(),"Member %s%s (%s) of %s %s is not documented.",
          qPrint(name()),qPrint(argsString()),qPrint(memberTypeName()),qPrint(t),qPrint(d->name()));
   }
-  else if (!isDetailedSectionLinkable())
+  else
   {
-    warnIfUndocumentedParams();
+    if (!m_impl->hasLinkedReq)
+    {
+      warn_undoc(getDefFileName(),getDefLine(),"Member %s%s (%s) of %s %s has no linked LLR.",
+                 qPrint(name()),qPrint(argsString()),qPrint(memberTypeName()),qPrint(t),qPrint(d->name()));
+    }
+    if (!isDetailedSectionLinkable())
+    {
+      warnIfUndocumentedParams();
+    }
   }
 }
 static QCString stripTrailingReturn(const QCString trailRet)
@@ -3937,7 +3946,7 @@ static QCString stripTrailingReturn(const QCString trailRet)
   return trailRet;
 }
 
-void MemberDefImpl::detectUndocumentedParams(bool hasParamCommand,bool hasReturnCommand) const
+void MemberDefImpl::detectUndocumentedParams(bool hasParamCommand,bool hasReturnCommand,bool hasReqCommand) const
 {
   if (!Config_getBool(WARN_NO_PARAMDOC)) return;
   QCString returnType = typeString();
@@ -4036,6 +4045,7 @@ void MemberDefImpl::detectUndocumentedParams(bool hasParamCommand,bool hasReturn
   {
     m_impl->hasDocumentedReturnType = TRUE;
   }
+  m_impl->hasLinkedReq = hasReqCommand;
 }
 
 void MemberDefImpl::warnIfUndocumentedParams() const

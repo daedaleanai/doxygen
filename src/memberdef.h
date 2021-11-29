@@ -280,7 +280,7 @@ class MemberDef : public Definition
                  bool inGroup, const ClassDef *inheritFrom=0,const char *inheritId=0) const = 0;
     virtual void writeEnumDeclaration(OutputList &typeDecl, const ClassDef *cd,
                 const NamespaceDef *nd,const FileDef *fd,const GroupDef *gd) const = 0;
-    virtual void detectUndocumentedParams(bool hasParamCommand,bool hasReturnCommand) const = 0;
+    virtual void detectUndocumentedParams(bool hasParamCommand,bool hasReturnCommand,bool hasReqCommand) const = 0;
     virtual void warnIfUndocumented() const = 0;
     virtual void warnIfUndocumentedParams() const = 0;
 

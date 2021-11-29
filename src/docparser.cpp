@@ -101,6 +101,7 @@ static QCString               g_relPath;
 
 static bool                   g_hasParamCommand;
 static bool                   g_hasReturnCommand;
+static bool                   g_hasReqCommand;
 static QDict<void>            g_retvalsFound;
 static QDict<void>            g_paramsFound;
 static const MemberDef *      g_memberDef;
@@ -136,6 +137,7 @@ struct DocParserContext
 
   bool         hasParamCommand;
   bool         hasReturnCommand;
+  bool         hasReqCommand;
   const MemberDef *  memberDef;
   QDict<void>  retvalsFound;
   QDict<void>  paramsFound;
@@ -183,6 +185,7 @@ static void docParserPushContext(bool saveParamInfo=TRUE)
   {
     ctx->hasParamCommand    = g_hasParamCommand;
     ctx->hasReturnCommand   = g_hasReturnCommand;
+    ctx->hasReqCommand      = g_hasReqCommand;
     ctx->paramsFound        = g_paramsFound;
     ctx->retvalsFound       = g_retvalsFound;
   }
@@ -224,6 +227,7 @@ static void docParserPopContext(bool keepParamInfo=FALSE)
   {
     g_hasParamCommand     = ctx->hasParamCommand;
     g_hasReturnCommand    = ctx->hasReturnCommand;
+    g_hasReqCommand       = ctx->hasReqCommand;
     g_retvalsFound        = ctx->retvalsFound;
     g_paramsFound         = ctx->paramsFound;
   }
@@ -4661,6 +4665,7 @@ QCString DocSimpleSect::typeString() const
     case Attention:  return "attention";
     case User:       return "user";
     case Rcs:        return "rcs";
+    case Requirements:        return "llr";
   }
   return "unknown";
 }
@@ -5755,6 +5760,41 @@ int DocPara::handleCommand(const QCString &cmdName, const int tok)
     case CMD_TPARAM:
       retval = handleParamSection(cmdName,DocParamSect::TemplateParam,FALSE,g_token->paramDir);
       break;
+    case CMD_LLR: {
+      int tok=doctokenizerYYlex();
+      if (tok!=TK_WHITESPACE)
+      {
+        warn_doc_error(g_fileName,getDoctokinizerLineNr(),"expected whitespace after \\%s command",
+                       qPrint(cmdName));
+        retval=0;
+        break;
+      }
+      doctokenizerYYsetStateParam();
+      tok=doctokenizerYYlex();
+      if (tok!=TK_WORD) {
+        warn_doc_error(g_fileName,getDoctokinizerLineNr(),"expected requirement after \\%s command",
+                       qPrint(cmdName));
+        retval=0;
+        break;
+      }
+
+      if (m_requirements == 0) {
+        DocSimpleSect * ss =
+            new DocSimpleSect(this, DocSimpleSect::Requirements);
+        m_children.append(ss);
+        m_requirements = new DocAutoList(ss, 0, true, 0);
+        ss->children().append(m_requirements);
+      }
+
+      DocAutoListItem * li = new DocAutoListItem(m_requirements, 0, m_requirements->children().count() + 1);
+      m_requirements->children().append(li);
+      DocRef * ref = new DocRef(li, g_token->name, g_context);
+      li->children().append(ref);
+      g_hasReqCommand = TRUE;
+      doctokenizerYYsetStatePara();
+      retval = RetVal_OK;
+      break;
+    }
     case CMD_RETVAL:
       retval = handleParamSection(cmdName,DocParamSect::RetVal);
       break;
@@ -7787,6 +7827,7 @@ DocRoot *validatingParseDoc(const char *fileName,int startLine,
   g_exampleName = exampleName;
   g_hasParamCommand = FALSE;
   g_hasReturnCommand = FALSE;
+  g_hasReqCommand = FALSE;
   g_retvalsFound.setAutoDelete(FALSE);
   g_retvalsFound.clear();
   g_paramsFound.setAutoDelete(FALSE);
@@ -7818,7 +7859,7 @@ DocRoot *validatingParseDoc(const char *fileName,int startLine,
   }
 
   checkUnOrMultipleDocumentedParams();
-  if (g_memberDef) g_memberDef->detectUndocumentedParams(g_hasParamCommand,g_hasReturnCommand);
+  if (g_memberDef) g_memberDef->detectUndocumentedParams(g_hasParamCommand,g_hasReturnCommand,g_hasReqCommand);
 
   // TODO: These should be called at the end of the program.
   //doctokenizerYYcleanup();
@@ -7858,7 +7899,7 @@ DocText *validatingParseText(const char *input)
   g_isExample = FALSE;
   g_exampleName = "";
   g_hasParamCommand = FALSE;
-  g_hasReturnCommand = FALSE;
+  g_hasReqCommand = FALSE;
   g_retvalsFound.setAutoDelete(FALSE);
   g_retvalsFound.clear();
   g_paramsFound.setAutoDelete(FALSE);

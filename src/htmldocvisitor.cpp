@@ -1393,6 +1393,8 @@ void HtmlDocVisitor::visitPre(DocSimpleSect *s)
       m_t << theTranslator->trRemarks(); break;
     case DocSimpleSect::Attention:
       m_t << theTranslator->trAttention(); break;
+    case DocSimpleSect::Requirements:
+      m_t << theTranslator->trRequirements(); break;
     case DocSimpleSect::User: break;
     case DocSimpleSect::Rcs: break;
     case DocSimpleSect::Unknown:  break;

@@ -235,6 +235,7 @@ template<class T> class CompAccept : public DocNode
 
   protected:
     QList<DocNode> m_children;
+    DocAutoList * m_requirements = 0;
 };
 
 
@@ -1153,7 +1154,8 @@ class DocSimpleSect : public CompAccept<DocSimpleSect>
     enum Type
     {
        Unknown, See, Return, Author, Authors, Version, Since, Date,
-       Note, Warning, Copyright, Pre, Post, Invar, Remark, Attention, User, Rcs
+       Note, Warning, Copyright, Pre, Post, Invar, Remark, Attention, User,
+      Rcs, Requirements,
     };
     DocSimpleSect(DocNode *parent,Type t);
     virtual ~DocSimpleSect();
